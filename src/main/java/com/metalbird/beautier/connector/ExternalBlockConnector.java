@@ -1,7 +1,10 @@
 package com.metalbird.beautier.connector;
 
+import javax.annotation.PostConstruct;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.metalbird.beautier.connector.model.BlockReqModel;
 import com.metalbird.beautier.connector.model.BlockResModel;
 import com.metalbird.beautier.connector.model.CustomConnectorException;
@@ -20,24 +23,30 @@ import org.springframework.web.client.RestTemplate;
 public class ExternalBlockConnector {
     private final int RETRY = 3;
 
-    @Value("${value.network}")
+    @Value("${network.url}")
     private String network;
-    @Value("${value.privateKey}")
+    @Value("${network.key}")
     private String privateKey;
-    private final HttpHeaders httpHeaders;
+    private HttpHeaders httpHeaders;
 
 
-    public ExternalBlockConnector() {
+    @PostConstruct
+    public void init() {
         httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        network = "";
+        privateKey = "";
+
     }
+   
 
     /**
      * external connector
      * @return
      * @throws CustomConnectorException
      */
-    public BlockResModel getBlockResModel() throws CustomConnectorException {
+    public BlockResModel getBlockResModel() throws CustomConnectorException {        
+        init();
         RestTemplate restTemplate = new RestTemplate();
         BlockReqModel blockReqModel = new BlockReqModel();
         return getBlockResModel(restTemplate, blockReqModel, 0);
@@ -48,16 +57,23 @@ public class ExternalBlockConnector {
             throw new CustomConnectorException(CustomException.NETWORK_UNREACHABLE);
         }
         try {
-            return restTemplate.postForObject(getBlockUrl(), getHttpEntityRequest(blockReqModel), BlockResModel.class);
+            String res = restTemplate.postForObject(getBlockUrl(), getHttpEntityRequest(blockReqModel), String.class);
+            BlockResModel result = getBlockResModelFromJsonStr(res);
+            return result;
         } catch (RestClientException e) {
-            log.error("" , e); // error 처리
+            log.error("RestClientException. detail : " , e); // error 처리
             return getBlockResModel(restTemplate, blockReqModel, ++callCount);
         } catch (Exception e) {
             log.error("unexpected exception. cause : ", e);
             BlockResModel blockResModel = new BlockResModel();
-            blockResModel.setSuccess(false);
+            blockResModel.setFail();
             return blockResModel;
         }
+    }
+    private BlockResModel getBlockResModelFromJsonStr(String res) {
+        Gson gson = new Gson();
+        BlockResModel transform = gson.fromJson(res, BlockResModel.class);
+        return transform;
     }
 
     private HttpEntity<String> getHttpEntityRequest(BlockReqModel blockReqModel) throws CustomConnectorException {
@@ -70,8 +86,9 @@ public class ExternalBlockConnector {
 
     private String getJsonByReqModel(BlockReqModel blockReqModel) throws CustomConnectorException {
         try {
-            return new ObjectMapper().writeValueAsString(blockReqModel);
-        } catch (JsonProcessingException e) {
+            Gson gson = new Gson();
+            return gson.toJson(blockReqModel);
+        } catch (Exception e) {
             log.error("json parse has error", e);
             throw new CustomConnectorException(CustomException.UNKNOWN);
         }

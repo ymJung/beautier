@@ -8,4 +8,8 @@ public class BlockResModel {
     private String jsonrpc;
     private long id;
     private BlockResult blockResult;
+
+    public void setFail() {
+        this.success = false;
+    }
 }

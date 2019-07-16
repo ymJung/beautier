@@ -1,4 +1,4 @@
-package com.metalbird.config;
+package com.metalbird;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

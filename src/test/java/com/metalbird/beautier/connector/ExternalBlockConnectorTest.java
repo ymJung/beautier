@@ -1,7 +1,9 @@
 package com.metalbird.beautier.connector;
 
+import com.metalbird.BeautierApplication;
 import com.metalbird.beautier.connector.model.BlockResModel;
 import com.metalbird.beautier.connector.model.CustomConnectorException;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,8 +26,11 @@ public class ExternalBlockConnectorTest {
     @Test
     public void getBlockResModelTest() throws CustomConnectorException {
         BlockResModel blockResModel = externalBlockConnector.getBlockResModel();
-        Assert.assertNotNull(blockResModel);
+        Assert.assertTrue(blockResModel.isSuccess());
+        Assert.assertNotNull(blockModel.getBlockResModel());
     }
+
+   
 
 
     
