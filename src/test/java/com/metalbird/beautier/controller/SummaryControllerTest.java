@@ -1,6 +1,7 @@
 package com.metalbird.beautier.controller;
 
-import com.metalbird.beautier.controller.model.CustomNetworkUnreachableException;
+import com.metalbird.beautier.connector.model.CustomConnectorException;
+import com.metalbird.beautier.connector.model.CustomException;
 import com.metalbird.beautier.controller.model.SummaryResult;
 import com.metalbird.beautier.service.SummaryService;
 
@@ -33,10 +34,10 @@ public class SummaryControllerTest {
     }
 
     @Test
-    public void gasPriceHasNetworkErrorTest() throws Exception {
-        Mockito.doThrow(CustomNetworkUnreachableException.class).when(summaryService).getGasSummaryResult();
-        SummaryResult result = summaryController.gasPrice();
-        Assert.assertFalse(result.isSuccess());
+    public void gasPriceHasErrorTest() throws Exception {
+        Mockito.doThrow(new CustomConnectorException(CustomException.UNKNOWN)).when(summaryService).getGasSummaryResult();
+        summaryController.gasPrice();
+        Assert.fail();
     }
 
 

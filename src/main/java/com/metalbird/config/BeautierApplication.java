@@ -1,4 +1,4 @@
-package com.metalbird.main;
+package com.metalbird.config;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

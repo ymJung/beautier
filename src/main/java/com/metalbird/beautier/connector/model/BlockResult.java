@@ -1,8 +1,11 @@
 package com.metalbird.beautier.connector.model;
 
+import lombok.Data;
+
 import java.util.*;
 
 
+@Data
 public class BlockResult {
     private String difficulty;
     private String extraData;

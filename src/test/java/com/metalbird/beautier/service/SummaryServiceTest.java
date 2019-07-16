@@ -2,9 +2,9 @@ package com.metalbird.beautier.service;
 
 import com.metalbird.beautier.connector.ExternalBlockConnector;
 
-import com.metalbird.beautier.controller.model.CustomNetworkTimeoutException;
-import com.metalbird.beautier.controller.model.CustomNetworkUnreachableException;
-import com.metalbird.beautier.controller.model.CustomUnexpectedException;
+import com.metalbird.beautier.connector.model.CustomConnectorException;
+import com.metalbird.beautier.connector.model.CustomException;
+import com.metalbird.beautier.controller.model.SummaryResult;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,27 +23,28 @@ public class SummaryServiceTest {
 
     @Test
     public void getGasSummaryResultTest() throws Exception {
-        summaryService.getGasSummaryResult();
+        SummaryResult result = summaryService.getGasSummaryResult();
+        Assert.assertNotNull(result);
     }
 
 
-    @Test(expected = CustomNetworkUnreachableException.class)
+    @Test(expected = CustomConnectorException.class)
     public void gasPriceHasNetworkErrorTest() throws Exception {
-        Mockito.doThrow(CustomNetworkUnreachableException.class).when(connector.getBlockResModel());
+        Mockito.doThrow(new CustomConnectorException(CustomException.NETWORK_UNREACHABLE)).when(connector.getBlockResModel());
         summaryService.getGasSummaryResult();
         Assert.fail();
     }
 
-    @Test(expected = CustomNetworkTimeoutException.class)
+    @Test(expected = CustomConnectorException.class)
     public void gasPriceHasNetworkTimeoutTest() throws Exception {
-        Mockito.doThrow(CustomNetworkTimeoutException.class).when(connector.getBlockResModel());
+        Mockito.doThrow(new CustomConnectorException(CustomException.NETWORK_TIMEOUT)).when(connector.getBlockResModel());
         summaryService.getGasSummaryResult();
         Assert.fail();
     }
 
-    @Test(expected = CustomUnexpectedException.class)
+    @Test(expected = CustomConnectorException.class)
     public void gasPriceHasUnExpectedException() throws Exception {
-        Mockito.doThrow(UnknownError.class).when(connector.getBlockResModel());
+        Mockito.doThrow(new CustomConnectorException(CustomException.UNKNOWN)).when(connector.getBlockResModel());
         summaryService.getGasSummaryResult();
         Assert.fail();
     }

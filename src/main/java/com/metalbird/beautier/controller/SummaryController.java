@@ -1,8 +1,6 @@
 package com.metalbird.beautier.controller;
 
-import com.metalbird.beautier.controller.model.CustomNetworkTimeoutException;
-import com.metalbird.beautier.controller.model.CustomNetworkUnreachableException;
-import com.metalbird.beautier.controller.model.CustomUnexpectedException;
+import com.metalbird.beautier.connector.model.CustomConnectorException;
 import com.metalbird.beautier.controller.model.SummaryResult;
 import com.metalbird.beautier.service.SummaryService;
 
@@ -22,7 +20,7 @@ public class SummaryController {
     public SummaryResult gasPrice() {
         try {
             return summaryService.getGasSummaryResult();
-        } catch (CustomNetworkUnreachableException| CustomNetworkTimeoutException| CustomUnexpectedException e) {
+        } catch (CustomConnectorException e) {
             return new SummaryResult(false, e.getMessage());
         } catch (Exception e) {
             log.error("unexpected exception. cause : ", e);
