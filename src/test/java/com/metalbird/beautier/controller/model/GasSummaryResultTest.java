@@ -15,10 +15,7 @@ public class GasSummaryResultTest {
     private final long UNIT_NUM = 1_000_000_000l;
     @Before
     public void setUp() {
-        gasSummaryResult = new GasSummaryResult();
-        gasSummaryResult.setAvgPrice(getBigNumber(1000));
-        gasSummaryResult.setMaxPrice(getBigNumber(1500));
-        gasSummaryResult.setMinPrice(getBigNumber(500));
+        gasSummaryResult = new GasSummaryResult(getBigNumber(1000), getBigNumber(1500), getBigNumber(500));
     }
     private BigInteger getBigNumber(int num) {
         long longNum = num * UNIT_NUM;

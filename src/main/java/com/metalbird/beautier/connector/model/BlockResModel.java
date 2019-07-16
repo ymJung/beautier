@@ -1,4 +1,4 @@
-package com.metalbird.beautier.model;
+package com.metalbird.beautier.connector.model;
 
 public class BlockResModel {
     private String jsonrpc;

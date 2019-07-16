@@ -1,4 +1,4 @@
-package com.metalbird.beautier.controller.model;
+package com.metalbird.beautier.connector.model;
 
 import java.util.*;
 
