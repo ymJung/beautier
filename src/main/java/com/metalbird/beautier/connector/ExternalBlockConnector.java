@@ -35,8 +35,6 @@ public class ExternalBlockConnector {
     public void init() {
         httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        network = "https://mainnet.infura.io/v3/";
-        privateKey = "edd64aeb57e54756b89140933a6c715d";
         jsonUtils = new JsonUtils();
     }
    
