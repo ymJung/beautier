@@ -7,7 +7,7 @@ public class BlockResModel {
     private boolean success = true;
     private String jsonrpc;
     private long id;
-    private BlockResult blockResult;
+    private BlockResult result;
 
     public void setFail() {
         this.success = false;
