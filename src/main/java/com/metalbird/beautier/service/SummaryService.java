@@ -28,4 +28,7 @@ public class SummaryService {
 		return summaryResult;
 	}
 
+	public SummaryResult getSummaryResultByBlockRes(BlockResModel sampleBlockResModel) {
+		return null;
+	}
 }
