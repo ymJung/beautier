@@ -70,6 +70,8 @@ public class SummaryServiceTest {
         BlockResModel sampleBlockResModel = getBlockResSample();
         BlockSummaryResult result = summaryService.getBlockSummaryResultByBlockRes(sampleBlockResModel.getResult());
         Assert.assertNotNull(result);
+        Assert.assertTrue(result.getTxBlockCount() > 0);
+        Assert.assertEquals(1, (int) result.getOrderedPriceTxCntMap().get(Double.valueOf(0)));
 
 
     }
