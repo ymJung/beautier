@@ -6,6 +6,7 @@ import com.metalbird.beautier.connector.model.BlockResModel;
 import com.metalbird.beautier.connector.model.CustomConnectorException;
 import com.metalbird.beautier.connector.model.CustomException;
 import com.metalbird.beautier.connector.util.JsonUtils;
+import com.metalbird.beautier.controller.model.BlockSummaryResult;
 import com.metalbird.beautier.controller.model.SummaryResult;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,6 +28,13 @@ public class SummaryServiceTest {
     @Mock
     private ExternalBlockConnector connector;
     
+    private BlockResModel getBlockResSample() throws IOException, CustomConnectorException {
+        Path resourceDirectory = Paths.get("src","test", "resources");
+        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        byte[] bytes = Files.readAllBytes(Paths.get(absolutePath + "/sample.json"));
+        String json = new String(bytes);
+        return new JsonUtils().getBlockResModelFromJsonStr(json);
+    }
 
     @Test
     public void getGasSummaryResultTest() throws Exception {
@@ -58,20 +66,15 @@ public class SummaryServiceTest {
 
 
     @Test
-    public void test() throws IOException, CustomConnectorException {
+    public void getBlockSummaryResultByBlockResTest() throws IOException, CustomConnectorException {
         BlockResModel sampleBlockResModel = getBlockResSample();
-        SummaryResult summaryResult = summaryService.getSummaryResultByBlockRes(sampleBlockResModel);
+        BlockSummaryResult result = summaryService.getBlockSummaryResultByBlockRes(sampleBlockResModel.getResult());
+        Assert.assertNotNull(result);
 
 
     }
 
-    private BlockResModel getBlockResSample() throws IOException, CustomConnectorException {
-        Path resourceDirectory = Paths.get("src","test", "resources");
-        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
-        byte[] bytes = Files.readAllBytes(Paths.get(absolutePath + "/sample.json"));
-        String json = new String(bytes);
-        return new JsonUtils().getBlockResModelFromJsonStr(json);
-    }
+   
 
 
 }

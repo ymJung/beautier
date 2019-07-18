@@ -16,7 +16,7 @@ public class BlockResult {
     private String miner;
     private String mixHash;
     private String nonce;
-    private String number; // 블록의 번호 -> 16진수
+    private String number; 
     private String parentHash;
     private String receiptsRoot;
     private String sha3Uncles;

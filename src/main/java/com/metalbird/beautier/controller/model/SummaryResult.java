@@ -10,8 +10,9 @@ public class SummaryResult {
     private String version = "0.1";
     private boolean success = true;
     private String message;
+    
 
-    private GasSummaryResult gasSummaryResult;
+    private BlockSummaryResult blockSummaryResult;
 
     public SummaryResult(boolean success, String message) {
         this.success = success;
