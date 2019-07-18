@@ -9,6 +9,7 @@ import com.metalbird.beautier.connector.util.JsonUtils;
 import com.metalbird.beautier.controller.model.BlockSummaryResult;
 import com.metalbird.beautier.controller.model.SummaryResult;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -36,32 +37,44 @@ public class SummaryServiceTest {
         return new JsonUtils().getBlockResModelFromJsonStr(json);
     }
 
+    @Before
+    public void setUp() throws Exception {
+        Mockito.when(connector.getBlockResModel()).thenReturn(getBlockResSample());
+    }
+
     @Test
     public void getGasSummaryResultTest() throws Exception {
         SummaryResult result = summaryService.getGasSummaryResult();
-        Assert.assertNotNull(result);
+        Assert.assertTrue(result.isSuccess());
+    }
+
+    @Test(expected = CustomConnectorException.class)
+    public void getGasSummaryResultTest_BlockIsNull() throws Exception {
+        Mockito.when(connector.getBlockResModel()).thenReturn(null);
+        SummaryResult result = summaryService.getGasSummaryResult();
+        Assert.assertTrue(result.isSuccess());
     }
 
 
     @Test(expected = CustomConnectorException.class)
     public void gasPriceHasNetworkErrorTest() throws Exception {
-        Mockito.doThrow(new CustomConnectorException(CustomException.NETWORK_UNREACHABLE)).when(connector.getBlockResModel());
-        summaryService.getGasSummaryResult();
-        Assert.fail();
+        Mockito.doThrow(new CustomConnectorException(CustomException.NETWORK_UNREACHABLE)).when(connector).getBlockResModel();
+        SummaryResult gasSummaryResult = summaryService.getGasSummaryResult();
+        Assert.assertFalse(gasSummaryResult.isSuccess());
     }
 
     @Test(expected = CustomConnectorException.class)
     public void gasPriceHasNetworkTimeoutTest() throws Exception {
-        Mockito.doThrow(new CustomConnectorException(CustomException.NETWORK_TIMEOUT)).when(connector.getBlockResModel());
-        summaryService.getGasSummaryResult();
-        Assert.fail();
+        Mockito.doThrow(new CustomConnectorException(CustomException.NETWORK_TIMEOUT)).when(connector).getBlockResModel();
+        SummaryResult gasSummaryResult = summaryService.getGasSummaryResult();
+        Assert.assertFalse(gasSummaryResult.isSuccess());
     }
 
     @Test(expected = CustomConnectorException.class)
     public void gasPriceHasUnExpectedException() throws Exception {
-        Mockito.doThrow(new CustomConnectorException(CustomException.UNKNOWN)).when(connector.getBlockResModel());
-        summaryService.getGasSummaryResult();
-        Assert.fail();
+        Mockito.doThrow(new CustomConnectorException(CustomException.UNKNOWN)).when(connector).getBlockResModel();
+        SummaryResult gasSummaryResult = summaryService.getGasSummaryResult();
+        Assert.assertFalse(gasSummaryResult.isSuccess());
     }
 
 

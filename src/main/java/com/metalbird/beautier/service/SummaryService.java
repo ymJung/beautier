@@ -6,14 +6,15 @@ import java.util.stream.Collectors;
 import com.metalbird.beautier.connector.ExternalBlockConnector;
 import com.metalbird.beautier.connector.model.BlockResModel;
 import com.metalbird.beautier.connector.model.BlockResult;
-import com.metalbird.beautier.connector.model.BlockTxModel;
+import com.metalbird.beautier.connector.model.CustomConnectorException;
+import com.metalbird.beautier.connector.model.CustomException;
 import com.metalbird.beautier.controller.model.BlockSummaryResult;
 import com.metalbird.beautier.controller.model.SummaryResult;
 
 import com.metalbird.beautier.util.BeautierUtils;
-import com.metalbird.beautier.util.StaticValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class SummaryService {
@@ -30,10 +31,27 @@ public class SummaryService {
 	 */
 	public SummaryResult getGasSummaryResult() throws Exception {
 		BlockResModel blockResModel = connector.getBlockResModel();
+		checkBlockResModel(blockResModel);
 		BlockSummaryResult blockSummaryResult = getBlockSummaryResultByBlockRes(blockResModel.getResult());
 		SummaryResult summaryResult = new SummaryResult();
 		summaryResult.setBlockSummaryResult(blockSummaryResult);
 		return summaryResult;
+	}
+
+	/**
+	 * check block res model.
+	 * 만약 에러가 있다면 에러 코드로 던져준다.
+	 * @param blockResModel
+	 * @return
+	 * @throws CustomConnectorException
+	 */
+	private void checkBlockResModel(BlockResModel blockResModel) throws CustomConnectorException {
+	    if (blockResModel == null || blockResModel.getResult() == null) {
+	        throw new CustomConnectorException(CustomException.NULL_BLOCK);
+		}
+	    if (CollectionUtils.isEmpty(blockResModel.getResult().getTransactions())) {
+			throw new CustomConnectorException(CustomException.NULL_TRANSACTIONS);
+		}
 	}
 
 	/**

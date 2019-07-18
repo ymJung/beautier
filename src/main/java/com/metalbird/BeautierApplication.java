@@ -20,9 +20,7 @@ public class BeautierApplication {
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		requestFactory.setReadTimeout(3000);
 		requestFactory.setConnectTimeout(3000);
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setRequestFactory(requestFactory);
-		return restTemplate;
+		return new RestTemplate(requestFactory);
 	}
 
 }

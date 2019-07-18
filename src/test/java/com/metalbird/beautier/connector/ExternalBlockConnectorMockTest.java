@@ -3,6 +3,7 @@ package com.metalbird.beautier.connector;
 import com.metalbird.beautier.connector.model.BlockResModel;
 import com.metalbird.beautier.connector.model.CustomConnectorException;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -13,10 +14,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExternalBlockConnectorMockTest {
@@ -25,15 +22,37 @@ public class ExternalBlockConnectorMockTest {
     @Mock
     private RestTemplate restTemplate;
 
+    @Before
+    public void setUp() {
+        externalBlockConnector.init();
+    }
 
 
 
     @Test(expected = CustomConnectorException.class)
-    public void getBlockResModel_RetryTest() throws CustomConnectorException {
+    public void getBlockResModelTest_Retry() throws CustomConnectorException {
         Mockito.doThrow(RestClientException.class).when(restTemplate).postForObject(Mockito.anyString(),
                 Mockito.any(HttpEntity.class), Mockito.eq(String.class));
         externalBlockConnector.getBlockResModel();
         Assert.fail();
+    }
+
+    @Test
+    public void getBlockResModelTest_UnexpectedException() throws CustomConnectorException {
+        Mockito.doThrow(UnsupportedOperationException.class).when(restTemplate).postForObject(Mockito.anyString(),
+                Mockito.any(HttpEntity.class), Mockito.eq(String.class));
+        BlockResModel blockResModel = externalBlockConnector.getBlockResModel();
+        Assert.assertFalse(blockResModel.isSuccess());
+    }
+
+    @Test
+    public void getBlockResModelTest() throws CustomConnectorException {
+        String responseStr = "{success:true}";
+        Mockito.when(restTemplate.postForObject(Mockito.anyString(), Mockito.any(HttpEntity.class), Mockito.eq(String.class)))
+                .thenReturn(responseStr);
+        BlockResModel blockResModel = externalBlockConnector.getBlockResModel();
+        Assert.assertTrue(blockResModel.isSuccess());
+
     }
 
 

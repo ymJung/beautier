@@ -1,6 +1,5 @@
 package com.metalbird.beautier.connector;
 
-import com.metalbird.BeautierApplication;
 import com.metalbird.beautier.connector.model.BlockResModel;
 import com.metalbird.beautier.connector.model.CustomConnectorException;
 

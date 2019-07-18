@@ -45,8 +45,7 @@ public class ExternalBlockConnector {
      * @throws CustomConnectorException
      */
     public BlockResModel getBlockResModel() throws CustomConnectorException {        
-        BlockReqModel blockReqModel = new BlockReqModel();
-        return getBlockResModel(blockReqModel, 0);
+        return getBlockResModel(new BlockReqModel(), 0);
     }
 
     private BlockResModel getBlockResModel(BlockReqModel blockReqModel, int callCount) throws CustomConnectorException {

@@ -34,10 +34,17 @@ public class SummaryControllerTest {
     }
 
     @Test
-    public void gasPriceHasErrorTest() throws Exception {
+    public void gasPriceTest_HasCusExceptionError() throws Exception {
         Mockito.doThrow(new CustomConnectorException(CustomException.UNKNOWN)).when(summaryService).getGasSummaryResult();
-        summaryController.gasPrice();
-        Assert.fail();
+        SummaryResult summaryResult = summaryController.gasPrice();
+        Assert.assertFalse(summaryResult.isSuccess());
+    }
+
+    @Test
+    public void gasPriceTest_HasUnexpectedExceptionError() throws Exception {
+        Mockito.doThrow(UnsupportedOperationException.class).when(summaryService).getGasSummaryResult();
+        SummaryResult summaryResult = summaryController.gasPrice();
+        Assert.assertFalse(summaryResult.isSuccess());
     }
 
 
