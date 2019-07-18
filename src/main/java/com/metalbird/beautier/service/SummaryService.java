@@ -1,9 +1,7 @@
 package com.metalbird.beautier.service;
 
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.metalbird.beautier.connector.ExternalBlockConnector;
 import com.metalbird.beautier.connector.model.BlockResModel;
@@ -12,6 +10,8 @@ import com.metalbird.beautier.connector.model.BlockTxModel;
 import com.metalbird.beautier.controller.model.BlockSummaryResult;
 import com.metalbird.beautier.controller.model.SummaryResult;
 
+import com.metalbird.beautier.util.BeautierUtils;
+import com.metalbird.beautier.util.StaticValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +20,8 @@ public class SummaryService {
 
     @Autowired
     private ExternalBlockConnector connector;
+
+    private BeautierUtils beautierUtils = new BeautierUtils();
 
 	/**
 	 * connector를 통해 가져온 block 가공
@@ -44,28 +46,31 @@ public class SummaryService {
 	 * @return
 	 */
 	public BlockSummaryResult getBlockSummaryResultByBlockRes(BlockResult blockResult) {
-		
-		Map<BigInteger, Integer> orderedPriceTxCntMap = new TreeMap<>();
-		for (BlockTxModel txModel : blockResult.getTransactions()) {
-			BigInteger price = new BigInteger(txModel.getGasPrice());
-			Integer cnt = orderedPriceTxCntMap.get(price);
-			if (cnt == null) {
-				orderedPriceTxCntMap.put(price, 0);
+		Map<Double, Integer> orderedPriceTxCntMap = new TreeMap<>(Collections.reverseOrder());
+		List<Double> priceList = blockResult.getTransactions().stream().map(
+				each -> beautierUtils.getHexToDouble(each.getGasPrice())).collect(Collectors.toList());
+
+		double max = Double.MIN_VALUE;
+		double min = Double.MAX_VALUE;
+		for (Double gasPriceDouble: priceList) {
+			orderedPriceTxCntMap.putIfAbsent(gasPriceDouble, 0);
+			orderedPriceTxCntMap.put(gasPriceDouble, orderedPriceTxCntMap.get(gasPriceDouble) + 1);
+			if (gasPriceDouble > max) {
+				max = gasPriceDouble;
 			}
-			orderedPriceTxCntMap.put(price, orderedPriceTxCntMap.get(price) + 1);
+			if (gasPriceDouble < min) {
+				min = gasPriceDouble;
+			}
 		}
-		double avg = blockResult.getTransactions().stream().mapToDouble(BlockTxModel::getGasPriceDouble).average().getAsDouble();
-		double max = blockResult.getTransactions().stream().mapToDouble(BlockTxModel::getGasPriceDouble).max().getAsDouble();
-		double min = blockResult.getTransactions().stream().mapToDouble(BlockTxModel::getGasPriceDouble).min().getAsDouble();
-		long blockNumber = Long.parseLong(blockResult.getNumber(), 16); // block number
+		double avg = priceList.stream().mapToDouble(each -> each).average().getAsDouble();
+		long blockNumber = beautierUtils.getHexToLong(blockResult.getNumber());
 		long txCnt = blockResult.getTransactions().size(); // tx cnt
 
-		BlockSummaryResult result = BlockSummaryResult.builder()
+		return BlockSummaryResult.builder()
 			.orderedPriceTxCntMap(orderedPriceTxCntMap)
 			.avgPrice(avg).maxPrice(max).minPrice(min)
 			.newestBlockNumber(blockNumber)
 			.txBlockCount(txCnt)
 			.build();
-		return result;
 	}
 }
