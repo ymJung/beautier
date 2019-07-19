@@ -8,6 +8,7 @@ import com.metalbird.beautier.util.StaticValues;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -38,13 +39,17 @@ public class ExternalBlockConnector {
 
     /**
      * get block res model by block number.
+     * using cache.
      * @param blockNumberStr
      * @return
      * @throws CustomConnectorException
      */
+    @Cacheable(value = "blockNumberStr", condition = "#blockNumberStr != 'latest'") // 6글자 latest 가 아닌 값은 cache 한다.
     public BlockResModel getBlockResModelUseParams(String blockNumberStr) throws CustomConnectorException {
         BlockReqModel blockReqModel = new BlockReqModel(blockNumberStr);
-        return getBlockResModel(blockReqModel, 0);
+        BlockResModel blockResModel = getBlockResModel(blockReqModel, 0);
+        log.debug("getBlockResModelUseParams. " + blockNumberStr);
+        return blockResModel;
     }
 
     private BlockResModel getBlockResModel(BlockReqModel blockReqModel, int callCount) throws CustomConnectorException {

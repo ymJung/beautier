@@ -25,9 +25,19 @@ public class ExternalBlockConnectorNetworkTest {
 
     @Test
     public void getBlockResModelTest() throws CustomConnectorException {
-        BlockResModel blockResModel = externalBlockConnector.getBlockResModelUseParams("0xFF");
+        BlockResModel blockResModel = externalBlockConnector.getBlockResModelUseParams("latest");
         Assert.assertTrue(blockResModel.isSuccess());
         Assert.assertNotNull(blockResModel.getResult());
+    }
+
+
+    @Test
+    public void getBlockResModelTest_cache() throws CustomConnectorException {
+        BlockResModel call1 = externalBlockConnector.getBlockResModelUseParams("0x7cd338");
+        Assert.assertTrue(call1.isSuccess());
+        BlockResModel call2 = externalBlockConnector.getBlockResModelUseParams("0x7cd338");
+        Assert.assertTrue(call2.isSuccess());
+        Assert.assertEquals(call1, call2);
     }
 
 }
