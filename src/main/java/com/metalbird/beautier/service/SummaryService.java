@@ -8,6 +8,7 @@ import com.metalbird.beautier.connector.model.BlockResModel;
 import com.metalbird.beautier.connector.model.BlockResult;
 import com.metalbird.beautier.connector.model.CustomConnectorException;
 import com.metalbird.beautier.connector.model.CustomException;
+import com.metalbird.beautier.controller.model.BeautierOrder;
 import com.metalbird.beautier.controller.model.BlockSummaryResult;
 import com.metalbird.beautier.controller.model.SummaryResult;
 
@@ -24,15 +25,18 @@ public class SummaryService {
 
     private BeautierUtils beautierUtils = new BeautierUtils();
 
+
 	/**
 	 * connector를 통해 가져온 block 가공
+	 * @param beautierOrder
 	 * @return
 	 * @throws Exception
 	 */
-	public SummaryResult getGasSummaryResult() throws Exception {
+	public SummaryResult getGasSummaryResult(BeautierOrder beautierOrder) throws Exception {
+
 		BlockResModel blockResModel = connector.getBlockResModel();
 		checkBlockResModel(blockResModel);
-		BlockSummaryResult blockSummaryResult = getBlockSummaryResultByBlockRes(blockResModel.getResult());
+		BlockSummaryResult blockSummaryResult = getBlockSummaryResultByBlockRes(beautierOrder, blockResModel.getResult());
 		return new SummaryResult(blockSummaryResult);
 	}
 
@@ -61,16 +65,16 @@ public class SummaryService {
 	 * @param blockResult
 	 * @return
 	 */
-	public BlockSummaryResult getBlockSummaryResultByBlockRes(BlockResult blockResult) {
-		Map<Double, Integer> orderedPriceTxCntMap = new TreeMap<>(Collections.reverseOrder());
+	public BlockSummaryResult getBlockSummaryResultByBlockRes(BeautierOrder order, BlockResult blockResult) {
 		List<Double> priceList = blockResult.getTransactions().stream()
 				.map(each -> beautierUtils.getHexToDouble(each.getGasPrice()))
 				.collect(Collectors.toList());
 
 		double max = Double.MIN_VALUE;
 		double min = Double.MAX_VALUE;
+		Map<Double, Integer> orderedPriceTxCntMap = order.getOrderedMap();
 		for (double gasPriceDouble : priceList) {
-		    double formattedPrice = beautierUtils.getFormatted(gasPriceDouble);
+		    double formattedPrice = beautierUtils.getFormattedNumber(gasPriceDouble);
 			orderedPriceTxCntMap.putIfAbsent(formattedPrice, 0);
 			orderedPriceTxCntMap.put(formattedPrice, orderedPriceTxCntMap.get(formattedPrice) + 1);
 			if (formattedPrice > max) {
@@ -80,13 +84,13 @@ public class SummaryService {
 				min = formattedPrice;
 			}
 		}
-		double avg = beautierUtils.getFormatted(priceList.stream().mapToDouble(each -> each).average().getAsDouble());
+		double avg = beautierUtils.getFormattedNumber(priceList.stream().mapToDouble(each -> each).average().getAsDouble());
 		long blockNumber = beautierUtils.getHexToLong(blockResult.getNumber());
 		long txCnt = blockResult.getTransactions().size(); // tx cnt
 
 		return BlockSummaryResult.builder()
 			.orderedPriceTxCntMap(orderedPriceTxCntMap)
-			.avgPrice(avg).maxPrice(max).minPrice(min)
+			.averageGasPrice(avg).maxGasPrice(max).minGasPrice(min)
 			.newestBlockNumber(blockNumber)
 			.txBlockCount(txCnt)
 			.build();

@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct;
 import com.google.gson.Gson;
 import com.metalbird.beautier.connector.model.*;
 import com.metalbird.beautier.connector.util.JsonUtils;
+import com.metalbird.beautier.util.StaticValues;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,18 +19,15 @@ import org.springframework.web.client.RestTemplate;
 @Component
 @Slf4j
 public class ExternalBlockConnector {
-    private final int RETRY = 3;
+    private HttpHeaders httpHeaders;
+    private JsonUtils jsonUtils;
 
     @Value("${network.url}")
     private String network;
     @Value("${network.key}")
     private String privateKey;
-    private HttpHeaders httpHeaders;
     @Autowired
     private RestTemplate restTemplate;
-    private JsonUtils jsonUtils;
-
-
 
     @PostConstruct
     public void init() {
@@ -49,7 +47,7 @@ public class ExternalBlockConnector {
     }
 
     private BlockResModel getBlockResModel(BlockReqModel blockReqModel, int callCount) throws CustomConnectorException {
-        if (callCount >= RETRY) {
+        if (callCount >= StaticValues.RETRY) {
             throw new CustomConnectorException(CustomException.NETWORK_UNREACHABLE);
         }
         try {

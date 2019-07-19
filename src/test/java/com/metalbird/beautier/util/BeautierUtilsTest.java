@@ -33,7 +33,7 @@ public class BeautierUtilsTest {
     @Test
     public void getFormattedTest() {
         double hexToDouble = beautierUtils.getHexToDouble(hexStr);
-        double formatted = beautierUtils.getFormatted(hexToDouble);
+        double formatted = beautierUtils.getFormattedNumber(hexToDouble);
         Assert.assertEquals(String.valueOf(formatted), "66.5");
     }
 }

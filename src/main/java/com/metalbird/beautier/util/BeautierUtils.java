@@ -17,7 +17,7 @@ public class BeautierUtils {
 
     private BigDecimal getGweiNumberFromHexStr(String hexNumStr) {
         BigDecimal price = getDecimalFromHex(hexNumStr);
-        return price.divide(BigDecimal.valueOf(Unit.GWEI.getToWei()));
+        return price.divide(BigDecimal.valueOf(StaticValues.UNIT.getToWei()));
     }
 
     private BigDecimal getDecimalFromHex(String hexNumStr) {
@@ -27,7 +27,7 @@ public class BeautierUtils {
         return new BigDecimal(new BigInteger(hexNumStr, StaticValues.HEX));
     }
 
-    public double getFormatted(double value) {
+    public double getFormattedNumber(double value) {
         String formattedStr = StaticValues.DECIMAL_FORMAT.format(value);
         return Double.valueOf(formattedStr);
     }
@@ -39,7 +39,7 @@ public class BeautierUtils {
     public enum Unit {
         WEI("WEI", 1), GWEI("Gwei", 1_000_000_000);
         private String name;
-        private long toWei; // 만약 2147483647 값이 넘는게 오면 개선이 필요함.
+        private long toWei;
 
         Unit(String name, int toWei) {
             this.name = name;
@@ -61,7 +61,8 @@ public class BeautierUtils {
         // Shannon	1000000000	0.000000001
         // Gwei	1000000000	0.000000001
         // Nano	1000000000	0.000000001
-        // Szabo	1000000000000	0.000001
+
+        // Szabo	1000000000000	0.000001 // 만약 구현이 필요하다면 0숫자로 계산
         // Micro	1000000000000	0.000001
         // Microether	1000000000000	0.000001
         // Finney	1000000000000000	0.001
