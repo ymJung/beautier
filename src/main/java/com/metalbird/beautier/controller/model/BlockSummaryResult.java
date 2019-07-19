@@ -11,10 +11,11 @@ public class BlockSummaryResult {
     
     private long newestBlockNumber;
     private long txBlockCount;
+    private Map<Double, Integer> orderedPriceTxCntMap;
     private double averageGasPrice;
     private double maxGasPrice;
     private double minGasPrice;
 
-    private Map<Double, Integer> orderedPriceTxCntMap;
+
 
 }

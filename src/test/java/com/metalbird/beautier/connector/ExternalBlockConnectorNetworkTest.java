@@ -18,14 +18,14 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = BeautierApplication.class)
-public class ExternalBlockConnectorTest {
+public class ExternalBlockConnectorNetworkTest {
     @Autowired
     private ExternalBlockConnector externalBlockConnector;
 
 
     @Test
     public void getBlockResModelTest() throws CustomConnectorException {
-        BlockResModel blockResModel = externalBlockConnector.getBlockResModel();
+        BlockResModel blockResModel = externalBlockConnector.getBlockResModelUseParams("0xFF");
         Assert.assertTrue(blockResModel.isSuccess());
         Assert.assertNotNull(blockResModel.getResult());
     }

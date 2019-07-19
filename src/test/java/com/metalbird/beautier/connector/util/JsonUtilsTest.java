@@ -21,7 +21,7 @@ public class JsonUtilsTest {
 
     @Test
     public void getJsonStrFromReqModel() throws CustomConnectorException {
-        String jsonStrFromReqModel = jsonUtils.getJsonStrFromReqModel(new BlockReqModel());
+        String jsonStrFromReqModel = jsonUtils.getJsonStrFromReqModel(new BlockReqModel(""));
         Assert.assertTrue(jsonStrFromReqModel.length() > 0);
     }
 

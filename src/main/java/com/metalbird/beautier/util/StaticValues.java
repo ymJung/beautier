@@ -8,5 +8,6 @@ public class StaticValues {
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#");
     public static final BeautierUtils.Unit UNIT = BeautierUtils.Unit.GWEI;
     public static final int RETRY = 3;
+    public static final String LATEST = "latest";
 
 }

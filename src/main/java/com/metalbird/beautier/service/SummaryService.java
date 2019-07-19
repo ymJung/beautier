@@ -1,5 +1,6 @@
 package com.metalbird.beautier.service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,11 +14,14 @@ import com.metalbird.beautier.controller.model.BlockSummaryResult;
 import com.metalbird.beautier.controller.model.SummaryResult;
 
 import com.metalbird.beautier.util.BeautierUtils;
+import com.metalbird.beautier.util.StaticValues;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 @Service
+@Slf4j
 public class SummaryService {
 
     @Autowired
@@ -29,15 +33,40 @@ public class SummaryService {
 	/**
 	 * connector를 통해 가져온 block 가공
 	 * @param beautierOrder
+     * @param blockNumberStr
 	 * @return
 	 * @throws Exception
 	 */
-	public SummaryResult getGasSummaryResult(BeautierOrder beautierOrder) throws Exception {
-
-		BlockResModel blockResModel = connector.getBlockResModel();
+	public SummaryResult getGasSummaryResult(BeautierOrder beautierOrder, String blockNumberStr) throws Exception {
+		BlockResModel blockResModel = connector.getBlockResModelUseParams(getBlockNumberStr(blockNumberStr));
 		checkBlockResModel(blockResModel);
 		BlockSummaryResult blockSummaryResult = getBlockSummaryResultByBlockRes(beautierOrder, blockResModel.getResult());
 		return new SummaryResult(blockSummaryResult);
+	}
+
+
+	private String getBlockNumberStr(String blockNumberStr) throws CustomConnectorException {
+	    if (StaticValues.LATEST.equals(blockNumberStr)) {
+	    	return blockNumberStr;
+		}
+		if (blockNumberStr.startsWith(StaticValues.START_HEX)) {
+			return blockNumberStr;
+		}
+
+		if (isNotValidNumber(blockNumberStr)) {
+			log.error("checkBlockReqParams isNotValidNumber.");
+			throw new CustomConnectorException(CustomException.INVALID_PARAMS);
+		}
+	    return StaticValues.START_HEX + Long.toHexString(Long.valueOf(blockNumberStr));
+	}
+
+	private boolean isNotValidNumber(String param) {
+		try {
+			long result = Long.parseLong(param);
+			return result < 0;
+		} catch (Exception e) {
+			return true;
+		}
 	}
 
 	/**

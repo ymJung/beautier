@@ -2,7 +2,6 @@ package com.metalbird.beautier.connector;
 
 import javax.annotation.PostConstruct;
 
-import com.google.gson.Gson;
 import com.metalbird.beautier.connector.model.*;
 import com.metalbird.beautier.connector.util.JsonUtils;
 import com.metalbird.beautier.util.StaticValues;
@@ -38,12 +37,14 @@ public class ExternalBlockConnector {
    
 
     /**
-     * external connector
+     * get block res model by block number.
+     * @param blockNumberStr
      * @return
      * @throws CustomConnectorException
      */
-    public BlockResModel getBlockResModel() throws CustomConnectorException {        
-        return getBlockResModel(new BlockReqModel(), 0);
+    public BlockResModel getBlockResModelUseParams(String blockNumberStr) throws CustomConnectorException {
+        BlockReqModel blockReqModel = new BlockReqModel(blockNumberStr);
+        return getBlockResModel(blockReqModel, 0);
     }
 
     private BlockResModel getBlockResModel(BlockReqModel blockReqModel, int callCount) throws CustomConnectorException {

@@ -30,6 +30,8 @@ public class SummaryServiceTest {
     @Mock
     private ExternalBlockConnector connector;
     private BeautierOrder beautierOrder;
+    private String blockStr;
+    private boolean fullTx;
 
     private BlockResModel getBlockResSample() throws IOException, CustomConnectorException {
         Path resourceDirectory = Paths.get("src","test", "resources");
@@ -42,41 +44,43 @@ public class SummaryServiceTest {
     @Before
     public void setUp() throws Exception {
         beautierOrder = BeautierOrder.DESC;
-        Mockito.when(connector.getBlockResModel()).thenReturn(getBlockResSample());
+        blockStr = "0xFF";
+        fullTx = true;
+        Mockito.when(connector.getBlockResModelUseParams(blockStr)).thenReturn(getBlockResSample());
     }
 
     @Test
     public void getGasSummaryResultTest() throws Exception {
-        SummaryResult result = summaryService.getGasSummaryResult(beautierOrder);
+        SummaryResult result = summaryService.getGasSummaryResult(beautierOrder, blockStr);
         Assert.assertTrue(result.isSuccess());
     }
 
     @Test(expected = CustomConnectorException.class)
     public void getGasSummaryResultTest_BlockIsNull() throws Exception {
-        Mockito.when(connector.getBlockResModel()).thenReturn(null);
-        SummaryResult result = summaryService.getGasSummaryResult(beautierOrder);
+        Mockito.when(connector.getBlockResModelUseParams(blockStr)).thenReturn(null);
+        SummaryResult result = summaryService.getGasSummaryResult(beautierOrder, blockStr);
         Assert.assertTrue(result.isSuccess());
     }
 
 
     @Test(expected = CustomConnectorException.class)
     public void gasPriceHasNetworkErrorTest() throws Exception {
-        Mockito.doThrow(new CustomConnectorException(CustomException.NETWORK_UNREACHABLE)).when(connector).getBlockResModel();
-        SummaryResult gasSummaryResult = summaryService.getGasSummaryResult(beautierOrder);
+        Mockito.doThrow(new CustomConnectorException(CustomException.NETWORK_UNREACHABLE)).when(connector).getBlockResModelUseParams(blockStr);
+        SummaryResult gasSummaryResult = summaryService.getGasSummaryResult(beautierOrder, blockStr);
         Assert.assertFalse(gasSummaryResult.isSuccess());
     }
 
     @Test(expected = CustomConnectorException.class)
     public void gasPriceHasNetworkTimeoutTest() throws Exception {
-        Mockito.doThrow(new CustomConnectorException(CustomException.NETWORK_TIMEOUT)).when(connector).getBlockResModel();
-        SummaryResult gasSummaryResult = summaryService.getGasSummaryResult(beautierOrder);
+        Mockito.doThrow(new CustomConnectorException(CustomException.NETWORK_TIMEOUT)).when(connector).getBlockResModelUseParams(blockStr);
+        SummaryResult gasSummaryResult = summaryService.getGasSummaryResult(beautierOrder, blockStr);
         Assert.assertFalse(gasSummaryResult.isSuccess());
     }
 
     @Test(expected = CustomConnectorException.class)
     public void gasPriceHasUnExpectedException() throws Exception {
-        Mockito.doThrow(new CustomConnectorException(CustomException.UNKNOWN)).when(connector).getBlockResModel();
-        SummaryResult gasSummaryResult = summaryService.getGasSummaryResult(beautierOrder);
+        Mockito.doThrow(new CustomConnectorException(CustomException.UNKNOWN)).when(connector).getBlockResModelUseParams(blockStr);
+        SummaryResult gasSummaryResult = summaryService.getGasSummaryResult(beautierOrder, blockStr);
         Assert.assertFalse(gasSummaryResult.isSuccess());
     }
 
@@ -92,7 +96,13 @@ public class SummaryServiceTest {
 
     }
 
-   
+    @Test(expected = CustomConnectorException.class)
+    public void getGasSummaryResultTest_hasParamError() throws Exception {
+        summaryService.getGasSummaryResult(beautierOrder, "invalid");
+        Assert.fail();
+
+    }
+
 
 
 }

@@ -28,42 +28,44 @@ public class SummaryControllerTest {
 
     private String order;
     private BeautierOrder beautierOrder;
+    private String blockNumStr;
+    private boolean fullTx;
 
     @Before
     public void setUp() {
         order = "DESC";
         beautierOrder = BeautierOrder.valueOf(order);
+        blockNumStr = "0xFF";
+        fullTx = true;
     }
 
         
     @Test
     public void gasPriceTest() throws Exception {
         SummaryResult summaryResult = new SummaryResult(true, "OK");
-        Mockito.when(summaryService.getGasSummaryResult(beautierOrder)).thenReturn(summaryResult);
-        SummaryResult result = summaryController.gasPrice(order);
+        Mockito.when(summaryService.getGasSummaryResult(beautierOrder, blockNumStr)).thenReturn(summaryResult);
+        SummaryResult result = summaryController.gasPrice(order, blockNumStr);
         Assert.assertEquals(result, summaryResult);
     }
 
     @Test
     public void gasPriceTest_HasCusExceptionError() throws Exception {
-        Mockito.doThrow(new CustomConnectorException(CustomException.UNKNOWN)).when(summaryService).getGasSummaryResult(Mockito.any(BeautierOrder.class));
-        SummaryResult summaryResult = summaryController.gasPrice(order);
+        Mockito.doThrow(new CustomConnectorException(CustomException.UNKNOWN)).when(summaryService).getGasSummaryResult(Mockito.any(BeautierOrder.class), Mockito.anyString());
+        SummaryResult summaryResult = summaryController.gasPrice(order, blockNumStr);
         Assert.assertFalse(summaryResult.isSuccess());
     }
 
     @Test
     public void gasPriceTest_HasUnexpectedExceptionError() throws Exception {
-        Mockito.doThrow(UnsupportedOperationException.class).when(summaryService).getGasSummaryResult(Mockito.any(BeautierOrder.class));
-        SummaryResult summaryResult = summaryController.gasPrice(order);
+        Mockito.doThrow(UnsupportedOperationException.class).when(summaryService).getGasSummaryResult(Mockito.any(BeautierOrder.class), Mockito.anyString());
+        SummaryResult summaryResult = summaryController.gasPrice(order, blockNumStr);
         Assert.assertFalse(summaryResult.isSuccess());
     }
-
 
     @Test
     public void gasPriceTest_invalidOrderParam() {
-        SummaryResult summaryResult = summaryController.gasPrice("invalid");
+        SummaryResult summaryResult = summaryController.gasPrice("invalid", "");
         Assert.assertFalse(summaryResult.isSuccess());
     }
-
 
 }

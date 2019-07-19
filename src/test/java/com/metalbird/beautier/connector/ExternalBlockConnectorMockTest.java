@@ -21,10 +21,12 @@ public class ExternalBlockConnectorMockTest {
     private ExternalBlockConnector externalBlockConnector;
     @Mock
     private RestTemplate restTemplate;
+    private String blockNumberStr;
 
     @Before
     public void setUp() {
         externalBlockConnector.init();
+        blockNumberStr = "0xFF";
     }
 
 
@@ -33,7 +35,7 @@ public class ExternalBlockConnectorMockTest {
     public void getBlockResModelTest_Retry() throws CustomConnectorException {
         Mockito.doThrow(RestClientException.class).when(restTemplate).postForObject(Mockito.anyString(),
                 Mockito.any(HttpEntity.class), Mockito.eq(String.class));
-        externalBlockConnector.getBlockResModel();
+        externalBlockConnector.getBlockResModelUseParams(blockNumberStr);
         Assert.fail();
     }
 
@@ -41,7 +43,7 @@ public class ExternalBlockConnectorMockTest {
     public void getBlockResModelTest_UnexpectedException() throws CustomConnectorException {
         Mockito.doThrow(UnsupportedOperationException.class).when(restTemplate).postForObject(Mockito.anyString(),
                 Mockito.any(HttpEntity.class), Mockito.eq(String.class));
-        BlockResModel blockResModel = externalBlockConnector.getBlockResModel();
+        BlockResModel blockResModel = externalBlockConnector.getBlockResModelUseParams(blockNumberStr);
         Assert.assertFalse(blockResModel.isSuccess());
     }
 
@@ -50,7 +52,7 @@ public class ExternalBlockConnectorMockTest {
         String responseStr = "{success:true}";
         Mockito.when(restTemplate.postForObject(Mockito.anyString(), Mockito.any(HttpEntity.class), Mockito.eq(String.class)))
                 .thenReturn(responseStr);
-        BlockResModel blockResModel = externalBlockConnector.getBlockResModel();
+        BlockResModel blockResModel = externalBlockConnector.getBlockResModelUseParams(blockNumberStr);
         Assert.assertTrue(blockResModel.isSuccess());
 
     }

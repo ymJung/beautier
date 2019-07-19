@@ -21,13 +21,15 @@ public class SummaryController {
     private SummaryService summaryService;
 
     @GetMapping("/gasPrice")
-    public SummaryResult gasPrice(@RequestParam(required = false, defaultValue = "DESC") String order) {
+    public SummaryResult gasPrice(@RequestParam(required = false, defaultValue = "DESC") String order,
+                                  @RequestParam(required = false, defaultValue = "latest") String blockNumberStr) {
         try {
-            return summaryService.getGasSummaryResult(BeautierOrder.valueOf(order));
+            return summaryService.getGasSummaryResult(BeautierOrder.valueOf(order), blockNumberStr);
         } catch (CustomConnectorException e) {
             return new SummaryResult(false, e.getMessage());
         } catch (IllegalArgumentException e) {
-            return new SummaryResult(false, "invalid order arg. choose one. " + Arrays.asList(BeautierOrder.values()));
+            return new SummaryResult(false, "invalid order arg. choose one. order =" +
+                    Arrays.asList(BeautierOrder.values()) + " blockNumberStr=[positive decimal or hex str(0xFF)]");
         } catch (Exception e) {
             log.error("unexpected exception. cause : ", e);
             return new SummaryResult(false, "server exception.");
