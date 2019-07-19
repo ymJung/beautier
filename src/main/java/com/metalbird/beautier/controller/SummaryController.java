@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Arrays;
 
@@ -41,10 +42,13 @@ public class SummaryController {
 
     @GetMapping("/gasPrice/pretty")
     @ResponseBody
-    public String gasPricePretty(@RequestParam(required = false, defaultValue = "DESC") String order,
-                                  @RequestParam(required = false, defaultValue = "latest") String blockNumberStr) {
+    public ModelAndView gasPricePretty(@RequestParam(required = false, defaultValue = "DESC") String order,
+                                       @RequestParam(required = false, defaultValue = "latest") String blockNumberStr) {
         SummaryResult summaryResult = gasPrice(order, blockNumberStr);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(summaryResult);
+        String result = gson.toJson(summaryResult);
+        ModelAndView modelAndView = new ModelAndView("/price/data");
+        modelAndView.addObject("json", result);
+        return modelAndView;
     }
 }

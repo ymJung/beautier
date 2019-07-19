@@ -14,7 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-
+import org.springframework.web.servlet.ModelAndView;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -70,8 +70,9 @@ public class SummaryControllerTest {
     public void gasPricePretty() throws Exception {
         SummaryResult summaryResult = new SummaryResult(true, "OK");
         Mockito.when(summaryService.getGasSummaryResult(beautierOrder, blockNumStr)).thenReturn(summaryResult);
-        String result = summaryController.gasPricePretty(order, blockNumStr);
-        Assert.assertTrue(result.contains("\n"));
+        ModelAndView mav = summaryController.gasPricePretty(order, blockNumStr);
+        String json = (String) mav.getModel().get("json");
+        Assert.assertTrue(json.contains("\n"));
     }
 
 }
