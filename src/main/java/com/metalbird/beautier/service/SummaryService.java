@@ -33,9 +33,7 @@ public class SummaryService {
 		BlockResModel blockResModel = connector.getBlockResModel();
 		checkBlockResModel(blockResModel);
 		BlockSummaryResult blockSummaryResult = getBlockSummaryResultByBlockRes(blockResModel.getResult());
-		SummaryResult summaryResult = new SummaryResult();
-		summaryResult.setBlockSummaryResult(blockSummaryResult);
-		return summaryResult;
+		return new SummaryResult(blockSummaryResult);
 	}
 
 	/**
@@ -65,22 +63,24 @@ public class SummaryService {
 	 */
 	public BlockSummaryResult getBlockSummaryResultByBlockRes(BlockResult blockResult) {
 		Map<Double, Integer> orderedPriceTxCntMap = new TreeMap<>(Collections.reverseOrder());
-		List<Double> priceList = blockResult.getTransactions().stream().map(
-				each -> beautierUtils.getHexToDouble(each.getGasPrice())).collect(Collectors.toList());
+		List<Double> priceList = blockResult.getTransactions().stream()
+				.map(each -> beautierUtils.getHexToDouble(each.getGasPrice()))
+				.collect(Collectors.toList());
 
 		double max = Double.MIN_VALUE;
 		double min = Double.MAX_VALUE;
-		for (Double gasPriceDouble: priceList) {
-			orderedPriceTxCntMap.putIfAbsent(gasPriceDouble, 0);
-			orderedPriceTxCntMap.put(gasPriceDouble, orderedPriceTxCntMap.get(gasPriceDouble) + 1);
-			if (gasPriceDouble > max) {
-				max = gasPriceDouble;
+		for (double gasPriceDouble : priceList) {
+		    double formattedPrice = beautierUtils.getFormatted(gasPriceDouble);
+			orderedPriceTxCntMap.putIfAbsent(formattedPrice, 0);
+			orderedPriceTxCntMap.put(formattedPrice, orderedPriceTxCntMap.get(formattedPrice) + 1);
+			if (formattedPrice > max) {
+				max = formattedPrice;
 			}
-			if (gasPriceDouble < min) {
-				min = gasPriceDouble;
+			if (formattedPrice < min) {
+				min = formattedPrice;
 			}
 		}
-		double avg = priceList.stream().mapToDouble(each -> each).average().getAsDouble();
+		double avg = beautierUtils.getFormatted(priceList.stream().mapToDouble(each -> each).average().getAsDouble());
 		long blockNumber = beautierUtils.getHexToLong(blockResult.getNumber());
 		long txCnt = blockResult.getTransactions().size(); // tx cnt
 

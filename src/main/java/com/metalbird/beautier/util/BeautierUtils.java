@@ -1,31 +1,38 @@
 package com.metalbird.beautier.util;
 
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class BeautierUtils {
 
     public double getHexToDouble(String hexNumStr) {
-        String priceStr = getFormattedStrNumber(hexNumStr);
-        return Double.parseDouble(priceStr);
+        BigDecimal number = getGweiNumberFromHexStr(hexNumStr);
+        return number.doubleValue();
     }
     public long getHexToLong(String hexNumStr) {
-        String priceStr = getFormattedStrNumber(hexNumStr);
-        return Long.parseLong(priceStr);
+        BigDecimal hexNum = getDecimalFromHex(hexNumStr);
+        return hexNum.longValue();
     }
 
-    private String getFormattedStrNumber(String hexNumStr) {
-        BigInteger price = getDecimalFromHex(hexNumStr);
-        price = price.divide(BigInteger.valueOf(Unit.GWEI.getToWei()));
-        return StaticValues.DECIMAL_FORMAT.format(price);
+    private BigDecimal getGweiNumberFromHexStr(String hexNumStr) {
+        BigDecimal price = getDecimalFromHex(hexNumStr);
+        return price.divide(BigDecimal.valueOf(Unit.GWEI.getToWei()));
     }
 
-    private BigInteger getDecimalFromHex(String hexNumStr) {
+    private BigDecimal getDecimalFromHex(String hexNumStr) {
         if (hexNumStr.startsWith(StaticValues.START_HEX)) {
             hexNumStr = hexNumStr.substring(StaticValues.START_HEX.length());
         }
-        return new BigInteger(hexNumStr, StaticValues.HEX);
+        return new BigDecimal(new BigInteger(hexNumStr, StaticValues.HEX));
     }
+
+    public double getFormatted(double value) {
+        String formattedStr = StaticValues.DECIMAL_FORMAT.format(value);
+        return Double.valueOf(formattedStr);
+    }
+
+
     /**
      * 이더리움 출력 단위
      */
