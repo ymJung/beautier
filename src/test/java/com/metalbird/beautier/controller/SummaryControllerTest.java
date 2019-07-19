@@ -29,14 +29,12 @@ public class SummaryControllerTest {
     private String order;
     private BeautierOrder beautierOrder;
     private String blockNumStr;
-    private boolean fullTx;
 
     @Before
     public void setUp() {
         order = "DESC";
         beautierOrder = BeautierOrder.valueOf(order);
         blockNumStr = "0xFF";
-        fullTx = true;
     }
 
         
@@ -66,6 +64,14 @@ public class SummaryControllerTest {
     public void gasPriceTest_invalidOrderParam() {
         SummaryResult summaryResult = summaryController.gasPrice("invalid", "");
         Assert.assertFalse(summaryResult.isSuccess());
+    }
+
+    @Test
+    public void gasPricePretty() throws Exception {
+        SummaryResult summaryResult = new SummaryResult(true, "OK");
+        Mockito.when(summaryService.getGasSummaryResult(beautierOrder, blockNumStr)).thenReturn(summaryResult);
+        String result = summaryController.gasPricePretty(order, blockNumStr);
+        Assert.assertTrue(result.contains("\n"));
     }
 
 }

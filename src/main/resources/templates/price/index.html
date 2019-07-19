@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello world.</title>
+</head>
+<body>
+<div style="text-align: center;">
+    <div>
+        <span style="font-size: 30px;">HELLO! WORLD.</span>
+    </div>
+    <hr/>
+    <div>
+        <span style="font-size: 20px;">DEFAULT.</span>
+        <div>
+            <a href="/gasPrice">/gasPrice</a>
+        </div>
+    </div>
+    <hr/>
+    <div>
+        <span style="font-size: 20px;">CUSTOM.</span>
+        <div>
+            <input id="blockNumber" type="text" style="width: 180px;" placeholder="10진수 숫자 또는 0x로시작하는16진수" />
+            <select id="order">
+                <option>DESC</option>
+                <option>ASC</option>
+            </select>
+            <a href="#" onclick="gasPrice();return false;">가져오기</a>
+        </div>
+    </div>
+    <hr/>
+    <div>
+        <span style="font-size: 20px;">PRETTY.</span>
+        <div>
+            <a href="/gasPrice/pretty">/gasPrice/pretty</a>
+        </div>
+    </div>
+</div>
+
+
+</body>
+<script>
+    function gasPrice() {
+        var blockNumber = document.getElementById('blockNumber').value;
+        var order = document.getElementById('order').value;
+        location.href='/gasPrice?order=' + order + '&blockNumber=' + blockNumber;
+    }
+</script>
+</html>
