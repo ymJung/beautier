@@ -44,7 +44,7 @@ public class ExternalBlockConnector {
      * @return
      * @throws CustomConnectorException
      */
-    @Cacheable(value = "blockNumberStr", condition = "#blockNumberStr != 'latest'") // 6글자 latest 가 아닌 값은 cache 한다.
+    @Cacheable(value = StaticValues.CACHE_NAME, condition = "#blockNumberStr != 'latest'") // 6글자 latest 가 아닌 값은 cache 한다.
     public BlockResModel getBlockResModelUseParams(String blockNumberStr) throws CustomConnectorException {
         BlockReqModel blockReqModel = new BlockReqModel(blockNumberStr);
         BlockResModel blockResModel = getBlockResModel(blockReqModel, 0);

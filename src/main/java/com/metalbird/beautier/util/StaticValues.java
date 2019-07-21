@@ -9,5 +9,6 @@ public class StaticValues {
     public static final BeautierUtils.Unit UNIT = BeautierUtils.Unit.GWEI;
     public static final int RETRY = 3;
     public static final String LATEST = "latest";
+    public static final String CACHE_NAME = "blockNumberStr";
 
 }
