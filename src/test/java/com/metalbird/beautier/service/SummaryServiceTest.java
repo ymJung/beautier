@@ -88,10 +88,10 @@ public class SummaryServiceTest {
     @Test
     public void getBlockSummaryResultByBlockResTest() throws IOException, CustomConnectorException {
         BlockResModel sampleBlockResModel = getBlockResSample();
-        BlockSummaryResult result = summaryService.getBlockSummaryResultByBlockRes(beautierOrder, sampleBlockResModel.getResult());
+        BlockSummaryResult result = summaryService.getBlockSummaryResultByBlockRes(BeautierOrder.DESC, sampleBlockResModel.getResult());
         Assert.assertNotNull(result);
         Assert.assertTrue(result.getTxBlockCount() > 0);
-        Assert.assertEquals(1, (int) result.getOrderedPriceTxCntMap().get(Double.valueOf(0)));
+        Assert.assertEquals(1, (int) result.getOrderedPriceTxCntMap().get("0"));
 
 
     }

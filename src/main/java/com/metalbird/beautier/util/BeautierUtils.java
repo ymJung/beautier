@@ -20,7 +20,7 @@ public class BeautierUtils {
         return price.divide(BigDecimal.valueOf(StaticValues.UNIT.getToWei()));
     }
 
-    private BigDecimal getDecimalFromHex(String hexNumStr) {
+    public BigDecimal getDecimalFromHex(String hexNumStr) {
         if (hexNumStr.startsWith(StaticValues.START_HEX)) {
             hexNumStr = hexNumStr.substring(StaticValues.START_HEX.length());
         }
@@ -30,6 +30,20 @@ public class BeautierUtils {
     public double getFormattedNumber(double value) {
         String formattedStr = StaticValues.DECIMAL_FORMAT.format(value);
         return Double.valueOf(formattedStr);
+    }
+
+    public String getFormattedNumberStr(BigDecimal value) {
+        BigDecimal divided = value.divide(BigDecimal.valueOf(StaticValues.UNIT.getToWei()));
+        return StaticValues.DECIMAL_FORMAT.format(divided);
+    }
+
+    public String getFormattedNumberStr(double value) {
+        return StaticValues.DECIMAL_FORMAT.format(value);
+    }
+
+    public double getFormattedNumberDouble(BigDecimal value) {
+        String formattedNumberStr = getFormattedNumberStr(value);
+        return Double.valueOf(formattedNumberStr);
     }
 
 
@@ -49,6 +63,7 @@ public class BeautierUtils {
         public long getToWei() {
             return toWei;
         }
+
 
 
         // WEI	1	0.000000000000000001

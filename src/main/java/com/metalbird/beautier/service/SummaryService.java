@@ -1,7 +1,9 @@
 package com.metalbird.beautier.service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.metalbird.beautier.connector.ExternalBlockConnector;
@@ -45,6 +47,12 @@ public class SummaryService {
 	}
 
 
+	/**
+	 * 유저 입력 블록 검증 (기본-latest)
+	 * @param blockNumberStr
+	 * @return
+	 * @throws CustomConnectorException
+	 */
 	private String getBlockNumberStr(String blockNumberStr) throws CustomConnectorException {
 	    if (StaticValues.LATEST.equals(blockNumberStr)) {
 	    	return blockNumberStr;
@@ -95,30 +103,21 @@ public class SummaryService {
 	 * @return
 	 */
 	public BlockSummaryResult getBlockSummaryResultByBlockRes(BeautierOrder order, BlockResult blockResult) {
-		List<Double> priceList = blockResult.getTransactions().stream()
-				.map(each -> beautierUtils.getHexToDouble(each.getGasPrice()))
+		List<BigDecimal> priceList = blockResult.getTransactions().stream()
+				.map(each -> beautierUtils.getDecimalFromHex(each.getGasPrice()))
 				.collect(Collectors.toList());
-
-		double max = Double.MIN_VALUE;
-		double min = Double.MAX_VALUE;
-		Map<Double, Integer> orderedPriceTxCntMap = order.getOrderedMap();
-		for (double gasPriceDouble : priceList) {
-		    double formattedPrice = beautierUtils.getFormattedNumber(gasPriceDouble);
-			orderedPriceTxCntMap.putIfAbsent(formattedPrice, 0);
-			orderedPriceTxCntMap.put(formattedPrice, orderedPriceTxCntMap.get(formattedPrice) + 1);
-			if (formattedPrice > max) {
-				max = formattedPrice;
-			}
-			if (formattedPrice < min) {
-				min = formattedPrice;
-			}
-		}
-		double avg = beautierUtils.getFormattedNumber(priceList.stream().mapToDouble(each -> each).average().getAsDouble());
+		Map<String, Integer> map = priceList.stream().collect(Collectors.groupingBy(each -> beautierUtils.getFormattedNumberStr(each),
+				Collectors.reducing(0, e -> 1, Integer::sum)));
+		Map<String, Integer> orderedMap = order.getOrderedMap(map);
+		String max = beautierUtils.getFormattedNumberStr(priceList.stream().max(BigDecimal::compareTo).orElse(BigDecimal.ZERO));
+		String min = beautierUtils.getFormattedNumberStr(priceList.stream().min(BigDecimal::compareTo).orElse(BigDecimal.ZERO));
+		String avg = beautierUtils.getFormattedNumberStr(priceList.stream()
+				.mapToDouble(each -> beautierUtils.getFormattedNumberDouble(each)).average().getAsDouble());
 		long blockNumber = beautierUtils.getHexToLong(blockResult.getNumber());
 		long txCnt = blockResult.getTransactions().size(); // tx cnt
 
 		return BlockSummaryResult.builder()
-			.orderedPriceTxCntMap(orderedPriceTxCntMap)
+			.orderedPriceTxCntMap(orderedMap)
 			.averageGasPrice(avg).maxGasPrice(max).minGasPrice(min)
 			.newestBlockNumber(blockNumber)
 			.txBlockCount(txCnt)

@@ -10,18 +10,20 @@ import java.util.TreeMap;
 public enum BeautierOrder {
     ASC{
             @Override
-            public Map<Double, Integer> getOrderedMap() {
-                return new TreeMap<>();
+            public Map<String, Integer> getOrderedMap(Map<String, Integer> map) {
+                return new TreeMap<>(map);
             }
 
     }, DESC{
             @Override
-            public Map<Double, Integer> getOrderedMap() {
-                return new TreeMap<>(Collections.reverseOrder());
+            public Map<String, Integer> getOrderedMap(Map<String, Integer> map) {
+                TreeMap<String, Integer> reverseOrderMap= new TreeMap<>(Collections.reverseOrder());
+                reverseOrderMap.putAll(map);
+                return reverseOrderMap;
             }
     };
 
-    public Map<Double, Integer> getOrderedMap() {
+    public Map<String, Integer> getOrderedMap(Map<String, Integer> map) {
         return new TreeMap<>(); //default
     }
 }
