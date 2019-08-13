@@ -8,7 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class MainController {
 
     @GetMapping("/")
-    public ModelAndView main() {
-        return new ModelAndView("/price/index");
+    public String main() {
+        return "/price/index";
     }
 }

@@ -9,6 +9,7 @@ import com.metalbird.beautier.service.SummaryService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,14 +42,14 @@ public class SummaryController {
     }
 
     @GetMapping("/gasPrice/pretty")
-    @ResponseBody
-    public ModelAndView gasPricePretty(@RequestParam(required = false, defaultValue = "DESC") String order,
-                                       @RequestParam(required = false, defaultValue = "latest") String blockNumberStr) {
+    public String gasPricePretty(@RequestParam(required = false, defaultValue = "DESC") String order,
+                                       @RequestParam(required = false, defaultValue = "latest") String blockNumberStr,
+                                 Model model) {
         SummaryResult summaryResult = gasPrice(order, blockNumberStr);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String result = gson.toJson(summaryResult);
-        ModelAndView modelAndView = new ModelAndView("/price/data");
-        modelAndView.addObject("json", result);
-        return modelAndView;
+        ModelAndView modelAndView = new ModelAndView();
+        model.addAttribute("json", result);
+        return "/price/data";
     }
 }
